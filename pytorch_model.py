@@ -1,9 +1,9 @@
 import numpy as np
-from teras.framework.pytorch.model import Biaffine, Embed, MLP
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
+from teras.framework.pytorch.model import Biaffine, Embed, MLP
+from torch.autograd import Variable
 
 from utils import mst
 
@@ -99,18 +99,18 @@ class DeepBiaffine(nn.Module):
                     np.pad(pretrained_word_tokens[i],
                            (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)).cuda(device_id))
+                        .astype(np.int64)).cuda(device_id))
                 xs_words_pretrained = self.embed[0](wp_idx)
                 w_idx = Variable(torch.from_numpy(
                     np.pad(word_tokens[i], (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)).cuda(device_id))
+                        .astype(np.int64)).cuda(device_id))
                 xs_words = self.embed[1](w_idx)
                 xs_words += xs_words_pretrained
                 p_idx = Variable(torch.from_numpy(
                     np.pad(pos_tokens[i], (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)).cuda(device_id))
+                        .astype(np.int64)).cuda(device_id))
                 xs_tags = self.embed[2](p_idx)
                 xs = torch.cat([self.embed._dropout(xs_words),
                                 self.embed._dropout(xs_tags)])
@@ -121,18 +121,18 @@ class DeepBiaffine(nn.Module):
                     np.pad(pretrained_word_tokens[i],
                            (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)))
+                        .astype(np.int64)))
                 xs_words_pretrained = self.embed[0](wp_idx)
                 w_idx = Variable(torch.from_numpy(
                     np.pad(word_tokens[i], (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)))
+                        .astype(np.int64)))
                 xs_words = self.embed[1](w_idx)
                 xs_words += xs_words_pretrained
                 p_idx = Variable(torch.from_numpy(
                     np.pad(pos_tokens[i], (0, max_length - lengths[i]),
                            mode="constant", constant_values=self._pad_id)
-                    .astype(np.int64)))
+                        .astype(np.int64)))
                 xs_tags = self.embed[2](p_idx)
                 xs = torch.cat([self.embed._dropout(xs_words),
                                 self.embed._dropout(xs_tags)], dim=1)

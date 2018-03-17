@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from teras.app import App, arg
 import teras.logging as Log
-from teras.training import Trainer, TrainEvent as Event
 import teras.utils
+from teras.app import App, arg
+from teras.training import Trainer, TrainEvent as Event
 
 import utils
 
@@ -85,7 +85,7 @@ def train(
     # Set up a neural network model
     model = model_cls(
         embeddings=({'initialW':
-                     loader.get_embeddings('word_pretrained', normalize='l2'),
+                         loader.get_embeddings('word_pretrained', normalize='l2'),
                      'fixed_weight': True},
                     {'initialW': loader.get_embeddings('word'),
                      'fixed_weight': False},
@@ -169,7 +169,6 @@ def test(
         target_file,
         decode=False,
         gpu=-1):
-
     # Load context
     context = teras.utils.load_context(model_file)
     if context.backend == 'chainer':
@@ -212,7 +211,7 @@ def test(
     # Set up a neural network model
     model = context.model_cls(
         embeddings=({'initialW':
-                     loader.get_embeddings('word_pretrained', normalize='l2'),
+                         loader.get_embeddings('word_pretrained', normalize='l2'),
                      'fixed_weight': True},
                     {'initialW': loader.get_embeddings('word'),
                      'fixed_weight': False},
@@ -258,57 +257,57 @@ if __name__ == "__main__":
 
     App.add_command('train', train, {
         'backend':
-        arg('--backend', type=str,
-            choices=('chainer', 'pytorch'), default='chainer',
-            help='Backend framework for computation'),
+            arg('--backend', type=str,
+                choices=('chainer', 'pytorch'), default='chainer',
+                help='Backend framework for computation'),
         'batch_size':
-        arg('--batchsize', '-b', type=int, default=32,
-            help='Number of examples in each mini-batch'),
+            arg('--batchsize', '-b', type=int, default=32,
+                help='Number of examples in each mini-batch'),
         'embed_file':
-        arg('--embedfile', type=str, default=None,
-            help='Pretrained word embedding file'),
+            arg('--embedfile', type=str, default=None,
+                help='Pretrained word embedding file'),
         'embed_size':
-        arg('--embedsize', type=int, default=100,
-            help='Size of embeddings'),
+            arg('--embedsize', type=int, default=100,
+                help='Size of embeddings'),
         'gpu':
-        arg('--gpu', '-g', type=int, default=-1,
-            help='GPU ID (negative value indicates CPU)'),
+            arg('--gpu', '-g', type=int, default=-1,
+                help='GPU ID (negative value indicates CPU)'),
         'lr':
-        arg('--lr', type=float, default=0.002,
-            help='Learning Rate'),
+            arg('--lr', type=float, default=0.002,
+                help='Learning Rate'),
         'model_params':
-        arg('--model', action='store_dict', default={},
-            help='Model hyperparameter'),
+            arg('--model', action='store_dict', default={},
+                help='Model hyperparameter'),
         'n_epoch':
-        arg('--epoch', '-e', type=int, default=20,
-            help='Number of sweeps over the dataset to train'),
+            arg('--epoch', '-e', type=int, default=20,
+                help='Number of sweeps over the dataset to train'),
         'seed':
-        arg('--seed', type=int, default=None,
-            help='Random seed'),
+            arg('--seed', type=int, default=None,
+                help='Random seed'),
         'save_to':
-        arg('--out', type=str, default=None,
-            help='Save model to the specified directory'),
+            arg('--out', type=str, default=None,
+                help='Save model to the specified directory'),
         'test_file':
-        arg('--validfile', type=str, default=None,
-            help='validation data file'),
+            arg('--validfile', type=str, default=None,
+                help='validation data file'),
         'train_file':
-        arg('--trainfile', type=str, required=True,
-            help='training data file'),
+            arg('--trainfile', type=str, required=True,
+                help='training data file'),
     })
 
     App.add_command('test', test, {
         'decode':
-        arg('--decode', action='store_true', default=False,
-            help='Print decoded results'),
+            arg('--decode', action='store_true', default=False,
+                help='Print decoded results'),
         'gpu':
-        arg('--gpu', '-g', type=int, default=-1,
-            help='GPU ID (negative value indicates CPU)'),
+            arg('--gpu', '-g', type=int, default=-1,
+                help='GPU ID (negative value indicates CPU)'),
         'model_file':
-        arg('--modelfile', type=str, required=True,
-            help='Trained model archive file'),
+            arg('--modelfile', type=str, required=True,
+                help='Trained model archive file'),
         'target_file':
-        arg('--targetfile', type=str, required=True,
-            help='Decoding target data file'),
+            arg('--targetfile', type=str, required=True,
+                help='Decoding target data file'),
     })
 
     App.run()

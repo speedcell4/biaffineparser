@@ -1,7 +1,7 @@
-from chainer import Chain, cuda, initializer, initializers
 import chainer.functions as F
 import numpy as np
 import teras.framework.chainer.functions as teras_F
+from chainer import Chain, cuda, initializer, initializers
 from teras.framework.chainer.model import Biaffine, BiGRU, BiLSTM, Embed, MLP
 
 from utils import mst
@@ -39,26 +39,22 @@ class DeepBiaffine(Chain):
                 dropout=lstm_dropout,
                 initialW=orthonormal_initializer
             )
-            layers = [MLP.Layer(None, n_arc_mlp_units,
-                                mlp_activation, arc_mlp_dropout,
-                                initialW=orthonormal_initializer)
-                      for i in range(n_arc_mlp_layers)]
-            self.mlp_arc_head = MLP(layers)
-            layers = [MLP.Layer(None, n_arc_mlp_units,
-                                mlp_activation, arc_mlp_dropout,
-                                initialW=orthonormal_initializer)
-                      for i in range(n_arc_mlp_layers)]
-            self.mlp_arc_dep = MLP(layers)
-            layers = [MLP.Layer(None, n_label_mlp_units,
-                                mlp_activation, label_mlp_dropout,
-                                initialW=orthonormal_initializer)
-                      for i in range(n_label_mlp_layers)]
-            self.mlp_label_head = MLP(layers)
-            layers = [MLP.Layer(None, n_label_mlp_units,
-                                mlp_activation, label_mlp_dropout,
-                                initialW=orthonormal_initializer)
-                      for i in range(n_label_mlp_layers)]
-            self.mlp_label_dep = MLP(layers)
+            self.mlp_arc_head = MLP([MLP.Layer(None, n_arc_mlp_units,
+                                               mlp_activation, arc_mlp_dropout,
+                                               initialW=orthonormal_initializer)
+                                     for i in range(n_arc_mlp_layers)])
+            self.mlp_arc_dep = MLP([MLP.Layer(None, n_arc_mlp_units,
+                                              mlp_activation, arc_mlp_dropout,
+                                              initialW=orthonormal_initializer)
+                                    for i in range(n_arc_mlp_layers)])
+            self.mlp_label_head = MLP([MLP.Layer(None, n_label_mlp_units,
+                                                 mlp_activation, label_mlp_dropout,
+                                                 initialW=orthonormal_initializer)
+                                       for i in range(n_label_mlp_layers)])
+            self.mlp_label_dep = MLP([MLP.Layer(None, n_label_mlp_units,
+                                                mlp_activation, label_mlp_dropout,
+                                                initialW=orthonormal_initializer)
+                                      for i in range(n_label_mlp_layers)])
             self.arc_biaffine = \
                 Biaffine(n_arc_mlp_units, n_arc_mlp_units, 1,
                          nobias=(False, True, True),
@@ -86,13 +82,9 @@ class DeepBiaffine(Chain):
             X.append(xs)
         R = self.blstm(X)
         R = F.pad_sequence(R)
-        H_arc_dep = self.mlp_arc_dep(R)
-        H_arc_head = self.mlp_arc_head(R)
-        arc_logits = self.arc_biaffine(H_arc_dep, H_arc_head)
+        arc_logits = self.arc_biaffine(self.mlp_arc_dep(R), self.mlp_arc_head(R))
         arc_logits = F.squeeze(arc_logits, axis=3)
-        H_label_dep = self.mlp_label_dep(R)
-        H_label_head = self.mlp_label_head(R)
-        label_logits = self.label_biaffine(H_label_dep, H_label_head)
+        label_logits = self.label_biaffine(self.mlp_label_dep(R), self.mlp_label_head(R))
         return arc_logits, label_logits
 
 
@@ -125,8 +117,8 @@ class Orthonormal(initializer.Initializer):
                 loss = xp.sum(QTQmI ** 2 / 2)
                 Q2 = Q ** 2
                 Q -= lr * Q.dot(QTQmI) / \
-                    (xp.abs(Q2 + Q2.sum(axis=0, keepdims=True)
-                            + Q2.sum(axis=1, keepdims=True) - 1) + eps)
+                     (xp.abs(Q2 + Q2.sum(axis=0, keepdims=True)
+                             + Q2.sum(axis=1, keepdims=True) - 1) + eps)
                 if xp.max(Q) > 1e6 or loss > 1e6 or not xp.isfinite(loss):
                     tries += 1
                     lr /= 2

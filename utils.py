@@ -1,11 +1,10 @@
-from collections import defaultdict
-import re
-
 import numpy as np
+import re
+import teras.logging as Log
+from collections import defaultdict
 from teras.base.event import Callback
 from teras.dataset.loader import CorpusLoader
 from teras.io.reader import ConllReader
-import teras.logging as Log
 from teras.preprocessing import text
 
 
@@ -98,7 +97,7 @@ def _find_cycle(vertices, edges):
                 w = _stack.pop()
                 _onstack[w] = False
                 SCC.add(w)
-                if not(w != v):
+                if not (w != v):
                     break
             _SCCs.append(SCC)
 
